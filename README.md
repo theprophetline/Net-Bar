@@ -113,4 +113,8 @@ If you find Net Bar useful, please consider supporting its development.
 
 [Visit Support Website](https://support.iad1tya.cyou)
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=iad1tya/net-bar&type=timeline&logscale&legend=top-left)](https://www.star-history.com/#iad1tya/net-bar&type=timeline&logscale&legend=top-left)
+
 </div>
