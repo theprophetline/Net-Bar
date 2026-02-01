@@ -14,11 +14,16 @@
   Real-time download/upload speeds • Detailed diagnostics • Fully customizable
 </p>
 
----
 
 ## Overview
 
 Net Bar provides real-time network monitoring directly in your menu bar. It allows users to view download and upload speeds at a glance and access detailed network diagnostics with a single click.
+
+## Screenshots
+
+<p align="center">
+  <img src="Screenshots/sc.png" alt="Net Bar Screenshot" width="50%" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+</p>
 
 ## Features
 
