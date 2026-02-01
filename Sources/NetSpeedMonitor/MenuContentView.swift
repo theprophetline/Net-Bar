@@ -1,4 +1,5 @@
 import SwiftUI
+import LaunchAtLogin
 import os.log
 
 public var logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.unknown.netspeedmonitor", category: "elegracer")
@@ -10,31 +11,11 @@ struct MenuContentView: View {
         VStack(alignment: .leading, spacing: 8) {
             Section {
                 HStack {
-                    Toggle("Start at Login", isOn: $menuBarState.autoLaunchEnabled)
-                        .toggleStyle(.button)
-                        .onChange(of: menuBarState.autoLaunchEnabled, initial: false) {oldState, newState in
-                            logger.info("Toggle::StartAtLogin: oldState：\(oldState), newState: \(newState)")
-                        }
-                }.fixedSize()
-            }
-            
-            Divider()
-            
-            Section {
-                HStack {
-                    ForEach(NetSpeedUpdateInterval.allCases) { interval in
-                        Toggle(
-                            interval.displayName,
-                            isOn: Binding(
-                                get: { menuBarState.netSpeedUpdateInterval == interval.rawValue },
-                                set: { if $0 { menuBarState.netSpeedUpdateInterval = interval.rawValue } }
-                            )
-                        )
-                        .toggleStyle(.button)
+                    LaunchAtLogin.Toggle {
+                        Text("Start at Login")
                     }
-                }
-            } header: {
-                Text("Update Interval")
+                    .toggleStyle(.button)
+                }.fixedSize()
             }
             
             Divider()

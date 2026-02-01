@@ -1,35 +1,20 @@
 import SwiftUI
 import Combine
-import ServiceManagement
+import LaunchAtLogin
 import SystemConfiguration
 import NetTrafficStat
 
-enum NetSpeedUpdateInterval: Int, CaseIterable, Identifiable {
-    case Sec1 = 1
-    case Sec2 = 2
-    case Sec5 = 5
-    case Sec10 = 10
-    case Sec30 = 30
-    
-    var id: Int { self.rawValue }
-    
-    var displayName: String {
-        switch self {
-        case .Sec1: return "1s"
-        case .Sec2: return "2s"
-        case .Sec5: return "5s"
-        case .Sec10: return "10s"
-        case .Sec30: return "30s"
-        }
-    }
-}
-
 class MenuBarState: ObservableObject {
-    @AppStorage("AutoLaunchEnabled") var autoLaunchEnabled: Bool = false {
-        didSet { updateAutoLaunchStatus() }
-    }
-    @AppStorage("NetSpeedUpdateInterval") var netSpeedUpdateInterval: Int = 1 {
-        didSet { updateNetSpeedUpdateIntervalStatus() }
+    // LaunchAtLogin handles the storage and state automatically
+    // We can expose a binding or just use LaunchAtLogin.isEnabled directly in the view
+    // But keeping a published property to sync might be useful if we want to observe changes,
+    // though LaunchAtLogin.observable seems better. For now let's just leave it out of here
+    // and use LaunchAtLogin directly in the view, OR wrapper it.
+    // Let's wrapping it for simplicity in the View code we have.
+    
+    var autoLaunchEnabled: Bool {
+        get { LaunchAtLogin.isEnabled }
+        set { LaunchAtLogin.isEnabled = newValue }
     }
     
     @AppStorage("displayMode") var displayMode: DisplayMode = .both
@@ -59,35 +44,6 @@ class MenuBarState: ObservableObject {
     private var downloadSpeed: Double = 0.0
     private let byteMetrics: [String] = [" B", "KB", "MB", "GB", "TB"]
     private let bitMetrics: [String] = [" b", "Kb", "Mb", "Gb", "Tb"]
-    
-    private func currentAutoLaunchStatus() -> Bool {
-        let service = SMAppService.mainApp
-        let status = service.status
-        return status == .enabled
-    }
-    
-    private func updateAutoLaunchStatus() {
-        let service = SMAppService.mainApp
-        do {
-            if autoLaunchEnabled {
-                if service.status == .notFound || service.status == .notRegistered {
-                    try service.register()
-                }
-            } else {
-                if service.status == .enabled {
-                    try service.unregister()
-                }
-            }
-        } catch {
-            print("AutoLaunch update failed: \(error)")
-            autoLaunchEnabled = currentAutoLaunchStatus()
-        }
-    }
-    
-    private func updateNetSpeedUpdateIntervalStatus() {
-        self.stopTimer()
-        self.startTimer()
-    }
     
     private func findPrimaryInterface() -> String? {
         let storeRef = SCDynamicStoreCreate(nil, "FindCurrentInterfaceIpMac" as CFString, nil, nil)
@@ -122,7 +78,8 @@ class MenuBarState: ObservableObject {
     }
     
     private func startTimer() {
-        let timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(self.netSpeedUpdateInterval), repeats: true) { _ in
+        let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+                guard let self = self else { return }
                 self.primaryInterface = self.findPrimaryInterface()
                 if (self.primaryInterface == nil) { return }
                 
@@ -159,7 +116,6 @@ class MenuBarState: ObservableObject {
     
     init() {
         DispatchQueue.main.async {
-            self.autoLaunchEnabled = self.currentAutoLaunchStatus()
             // Ensure valid display mode default
             if self.menuText.isEmpty { self.menuText = "..." }
             self.startTimer()

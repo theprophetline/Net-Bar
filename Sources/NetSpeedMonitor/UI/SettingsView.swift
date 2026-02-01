@@ -8,8 +8,8 @@ struct SettingsView: View {
     @AppStorage("fontSize") private var fontSize: Double = 9.0
     @AppStorage("textSpacing") private var textSpacing: Double = 0.0
     @AppStorage("characterSpacing") private var characterSpacing: Double = 0.0
-    @AppStorage("NetSpeedUpdateInterval") private var updateInterval: Int = 1
-    @AppStorage("AutoLaunchEnabled") private var autoLaunchEnabled: Bool = false
+
+
     
     @EnvironmentObject var menuBarState: MenuBarState
     
@@ -26,7 +26,7 @@ struct SettingsView: View {
                         Text("Net Bar")
                             .font(.title3)
                             .fontWeight(.semibold)
-                        Text("Version 1.0.0")
+                        Text("Version 1.2")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -60,13 +60,9 @@ struct SettingsView: View {
             }
             
             Section("Behavior") {
-                Toggle("Launch at Login", isOn: $autoLaunchEnabled)
+                Toggle("Launch at Login", isOn: $menuBarState.autoLaunchEnabled)
                 
-                Picker("Update Interval", selection: $updateInterval) {
-                    Text("1s").tag(1)
-                    Text("2s").tag(2)
-                    Text("5s").tag(5)
-                }
+
             }
             
             Section("Appearance") {
@@ -178,7 +174,6 @@ struct SettingsView: View {
             DispatchQueue.main.async {
                 let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
                 
-                // Simple string comparison for now, assuming semantic versioning like "v1.0.1"
                 // Strip 'v' prefix if present
                 let remoteVersion = tagName.replacingOccurrences(of: "v", with: "")
                 let localVersion = currentVersion.replacingOccurrences(of: "v", with: "")
@@ -190,6 +185,8 @@ struct SettingsView: View {
             }
         }.resume()
     }
+    
+
 }
 
 

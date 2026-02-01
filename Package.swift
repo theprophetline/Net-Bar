@@ -12,6 +12,9 @@ let package = Package(
             targets: ["NetSpeedMonitor"]
         )
     ],
+    dependencies: [
+        .package(url: "https://github.com/sindresorhus/LaunchAtLogin", from: "5.0.0")
+    ],
     targets: [
         .target(
             name: "NetTrafficStat",
@@ -19,7 +22,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "NetSpeedMonitor",
-            dependencies: ["NetTrafficStat"],
+            dependencies: [
+                "NetTrafficStat",
+                .product(name: "LaunchAtLogin", package: "LaunchAtLogin")
+            ],
             path: "Sources/NetSpeedMonitor",
             resources: [
                 .process("Assets.xcassets")
