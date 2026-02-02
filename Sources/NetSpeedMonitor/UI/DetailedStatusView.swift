@@ -6,6 +6,9 @@ struct DetailedStatusView: View {
     @EnvironmentObject var menuBarState: MenuBarState
     @Environment(\.openWindow) var openWindow
     
+    @State private var uptimeString: String = "00:00:00"
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Header
@@ -25,40 +28,83 @@ struct DetailedStatusView: View {
                         openWindow(id: "settings")
                     }
             }
-            
             Divider()
             
-            // Wi-Fi Section
+            // Traffic Section
             VStack(alignment: .leading) {
-                HStack {
-                    Circle()
-                        .fill(statsService.stats.ssid == "Disconnected" || statsService.stats.ssid == "No Interface" ? Color.red : (statsService.stats.rssi == 0 ? Color.orange : (statsService.stats.rssi > -90 ? Color.green : Color.red)))
-                        .frame(width: 8, height: 8)
-                    Text(statsService.stats.ssid)
-                        .font(.system(size: 14, weight: .bold))
-                    Text(statsService.stats.band)
-                        .font(.caption)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.white.opacity(0.1))
-                        .cornerRadius(4)
+                Text("Traffic")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.secondary)
+                    
+                Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 12) {
+                    GridRow(alignment: .center) {
+                        Text("Download")
+                            .foregroundStyle(.secondary)
+                        Text(menuBarState.formatBytes(menuBarState.totalDownload).0 + " " + menuBarState.formatBytes(menuBarState.totalDownload).1)
+                            .foregroundStyle(.green)
+                            .monospacedDigit()
+                        StatGraphView(
+                            data: menuBarState.downloadHistory,
+                            color: .green,
+                            minRange: 0, maxRange: 1024 * 1024,
+                            height: 16
+                        )
+                    }
+                    GridRow(alignment: .center) {
+                        Text("Upload")
+                            .foregroundStyle(.secondary)
+                        Text(menuBarState.formatBytes(menuBarState.totalUpload).0 + " " + menuBarState.formatBytes(menuBarState.totalUpload).1)
+                            .foregroundStyle(.blue)
+                            .monospacedDigit()
+                        StatGraphView(
+                            data: menuBarState.uploadHistory,
+                            color: .blue,
+                            minRange: 0, maxRange: 1024 * 1024,
+                            height: 16
+                        )
+                    }
+                    GridRow(alignment: .center) {
+                         Text("Total")
+                            .foregroundStyle(.secondary)
+                         Text(menuBarState.formatBytes(menuBarState.totalDownload + menuBarState.totalUpload).0 + " " + menuBarState.formatBytes(menuBarState.totalDownload + menuBarState.totalUpload).1)
+                             .foregroundStyle(.purple)
+                             .monospacedDigit()
+                         StatGraphView(
+                             data: menuBarState.totalTrafficHistory,
+                             color: .purple,
+                             minRange: 0, maxRange: 1024 * 1024 * 2,
+                             height: 16
+                         )
+                     }
                 }
-                
-                Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
-                    GridRow {
+            }
+
+            Divider()
+            
+            // Connection Section
+            VStack(alignment: .leading) {
+                Text("Connection")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.secondary)
+                    
+                Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 12) {
+                    GridRow(alignment: .center) {
                         Text("Link Rate")
                             .foregroundStyle(.secondary)
                         Text("\(Int(statsService.stats.txRate)) Mbps")
                             .foregroundStyle(.green)
                             .monospacedDigit()
                         StatGraphView(
-                            data: Array(repeating: statsService.stats.txRate, count: 20), // Placeholder for rate history if valid, or we could track it too.
+                            data: Array(repeating: statsService.stats.txRate, count: 20),
                             color: .green,
-                            minRange: 0, maxRange: 1000
+                            minRange: 0, maxRange: 1000,
+                            height: 16
                         )
                     }
                     
-                    GridRow {
+                    GridRow(alignment: .center) {
                         Text("Signal")
                             .foregroundStyle(.secondary)
                         Text("\(statsService.stats.rssi) dBm")
@@ -67,11 +113,12 @@ struct DetailedStatusView: View {
                         StatGraphView(
                             data: statsService.signalHistory.map { Double($0) },
                             color: .orange,
-                            minRange: -100, maxRange: -30
+                            minRange: -100, maxRange: -30,
+                            height: 16
                         )
                     }
                     
-                    GridRow {
+                    GridRow(alignment: .center) {
                         Text("Noise")
                             .foregroundStyle(.secondary)
                         Text("\(statsService.stats.noise) dBm")
@@ -80,7 +127,8 @@ struct DetailedStatusView: View {
                         StatGraphView(
                             data: statsService.noiseHistory.map { Double($0) },
                             color: .green,
-                            minRange: -110, maxRange: -80
+                            minRange: -110, maxRange: -80,
+                            height: 16
                         )
                     }
                 }
@@ -95,8 +143,8 @@ struct DetailedStatusView: View {
                     .fontWeight(.bold)
                     .foregroundStyle(.secondary)
                 
-                Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
-                    GridRow {
+                Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 12) {
+                    GridRow(alignment: .center) {
                         Text("Ping")
                             .foregroundStyle(.secondary)
                         Text(String(format: "%.0f ms", statsService.stats.routerPing))
@@ -105,31 +153,32 @@ struct DetailedStatusView: View {
                         StatGraphView(
                             data: statsService.routerPingHistory,
                             color: .green,
-                            minRange: 0, maxRange: 100
+                            minRange: 0, maxRange: 100,
+                            height: 16
                         )
                     }
                     
-                    GridRow {
+                    GridRow(alignment: .center) {
                         Text("Jitter")
                             .foregroundStyle(.secondary)
                         Text(String(format: "%.1f ms", statsService.stats.routerJitter))
-                            .foregroundStyle(.red) // Assuming slightly high jitter in red for visual matching
+                            .foregroundStyle(.red)
                             .monospacedDigit()
-                        // Generic Jitter Graph
                          StatGraphView(
-                            data: statsService.routerPingHistory.map { abs($0 - statsService.stats.routerPing) }, // visual approx for jitter graph
+                            data: statsService.routerPingHistory.map { abs($0 - statsService.stats.routerPing) },
                             color: .red,
-                            minRange: 0, maxRange: 50
+                            minRange: 0, maxRange: 50,
+                            height: 16
                         )
                     }
                     
-                    GridRow {
+                    GridRow(alignment: .center) {
                         Text("Loss")
                             .foregroundStyle(.secondary)
                         Text(String(format: "%.0f%%", statsService.stats.routerLoss))
                             .foregroundStyle(.yellow)
                             .monospacedDigit()
-                        Rectangle().fill(Color.orange).frame(height: 2) // Static line for now
+                        Rectangle().fill(Color.orange).frame(height: 2)
                     }
                 }
             }
@@ -138,13 +187,13 @@ struct DetailedStatusView: View {
             
             // Internet Section
             VStack(alignment: .leading) {
-                Text("Internet • 1.1.1.1")
+                Text("Internet - 1.1.1.1")
                     .font(.caption)
                     .fontWeight(.bold)
                     .foregroundStyle(.secondary)
                     
-                 Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
-                    GridRow {
+                 Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 12) {
+                    GridRow(alignment: .center) {
                         Text("Ping")
                             .foregroundStyle(.secondary)
                         Text(String(format: "%.0f ms", statsService.stats.ping))
@@ -153,11 +202,12 @@ struct DetailedStatusView: View {
                         StatGraphView(
                             data: statsService.pingHistory,
                             color: .yellow,
-                            minRange: 0, maxRange: 200
+                            minRange: 0, maxRange: 200,
+                            height: 16
                         )
                     }
                     
-                    GridRow {
+                    GridRow(alignment: .center) {
                         Text("Jitter")
                             .foregroundStyle(.secondary)
                         Text(String(format: "%.1f ms", statsService.stats.jitter))
@@ -166,13 +216,32 @@ struct DetailedStatusView: View {
                          StatGraphView(
                             data: statsService.pingHistory.map { abs($0 - statsService.stats.ping) },
                             color: .red,
-                            minRange: 0, maxRange: 50
+                            minRange: 0, maxRange: 50,
+                            height: 16
                         )
                     }
                 }
             }
             
             Divider()
+            
+            // Tips Section
+            if !tips.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("Tips", systemImage: "lightbulb.fill")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.yellow)
+                    
+                    ForEach(tips, id: \.self) { tip in
+                        Text("• " + tip)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                Divider()
+            }
             
             // Quit Button
             Button(action: {
@@ -193,5 +262,36 @@ struct DetailedStatusView: View {
         .padding(16)
         .frame(width: 350)
         .background(Color(NSColor.windowBackgroundColor))
+        .onReceive(timer) { input in
+            let diff = input.timeIntervalSince(menuBarState.appLaunchDate)
+            let hours = Int(diff) / 3600
+            let minutes = (Int(diff) % 3600) / 60
+            let seconds = Int(diff) % 60
+            uptimeString = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        }
+    }
+    
+    // Smart Tips Logic
+    var tips: [String] {
+        var list: [String] = []
+        let s = statsService.stats
+        
+        if s.rssi < -75 && s.rssi != 0 {
+            list.append("Weak Wi-Fi signal. Move closer to your router.")
+        }
+        if s.txRate < 50 && s.txRate > 0 {
+            list.append("Low link rate. Wi-Fi might be slow.")
+        }
+        if s.noise > -85 && s.noise != 0 {
+            list.append("High interference (Noise). Try changing Wi-Fi channel.")
+        }
+        if s.routerLoss > 1.0 {
+            list.append("Packet loss detected to router. Connection unstable.")
+        }
+        if s.routerJitter > 50 {
+            list.append("High jitter detected. Calls may be choppy.")
+        }
+        
+        return list
     }
 }

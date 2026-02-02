@@ -6,6 +6,15 @@ struct StatGraphView: View {
     let color: Color
     let minRange: Double
     let maxRange: Double
+    let height: CGFloat
+    
+    init(data: [Double], color: Color, minRange: Double, maxRange: Double, height: CGFloat = 20) {
+        self.data = data
+        self.color = color
+        self.minRange = minRange
+        self.maxRange = maxRange
+        self.height = height
+    }
     
     // Computed property to create points for the chart
     var chartPoints: [(index: Int, value: Double)] {
@@ -27,7 +36,8 @@ struct StatGraphView: View {
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
         .chartYScale(domain: .automatic)
-        .frame(height: 30)
+        .chartYScale(domain: .automatic)
+        .frame(height: height)
         .clipped()
     }
 }

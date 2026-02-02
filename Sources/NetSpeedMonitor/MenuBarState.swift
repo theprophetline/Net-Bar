@@ -36,12 +36,29 @@ class MenuBarState: ObservableObject {
         )
     }
     
+    // Expose raw values for UI
+    var currentUploadSpeed: Double { uploadSpeed }
+    var currentDownloadSpeed: Double { downloadSpeed }
+    
     private var timer: Timer?
     private var primaryInterface: String?
     private var netTrafficStat = NetTrafficStatReceiver()
     
+    // Session tracking
+    @Published var totalUpload: Double = 0.0
+    @Published var totalDownload: Double = 0.0
+    @Published var appLaunchDate = Date()
+    
+    // Speed History for Graphs
+    @Published var downloadHistory: [Double] = []
+    @Published var uploadHistory: [Double] = []
+    @Published var totalTrafficHistory: [Double] = []
+    private let historyLimit = 60
+    
+    // Current Speed
     private var uploadSpeed: Double = 0.0
     private var downloadSpeed: Double = 0.0
+    
     private let byteMetrics: [String] = [" B", "KB", "MB", "GB", "TB"]
     private let bitMetrics: [String] = [" b", "Kb", "Mb", "Gb", "Tb"]
     
@@ -52,7 +69,7 @@ class MenuBarState: ObservableObject {
         return primaryInterface
     }
     
-    private func formatSpeed(_ speed: Double) -> (String, String) {
+    func formatSpeed(_ speed: Double) -> (String, String) {
         // Convert to bits if needed
         let value = unitType == .bits ? speed * 8 : speed
         
@@ -77,6 +94,26 @@ class MenuBarState: ObservableObject {
         return (String(format: "%6.2lf", scaledValue), metrics[metricIndex] + (unitType == .bits ? "ps" : "/s"))
     }
     
+    func formatBytes(_ bytes: Double) -> (String, String) {
+         let metrics = byteMetrics // Always bytes for total
+         var scaledValue = bytes
+         var metricIndex = 0
+         
+         while scaledValue > 1024.0 && metricIndex < metrics.count - 1 {
+             scaledValue /= 1024.0
+             metricIndex += 1
+         }
+         
+         return (String(format: "%.2f", scaledValue), metrics[metricIndex])
+    }
+    
+    private func updateHistory<T>(_ history: inout [T], newValue: T) {
+        history.append(newValue)
+        if history.count > historyLimit {
+            history.removeFirst()
+        }
+    }
+    
     private func startTimer() {
         let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
                 guard let self = self else { return }
@@ -87,6 +124,15 @@ class MenuBarState: ObservableObject {
                     if let netTrafficStat = netTrafficStatMap.object(forKey: self.primaryInterface!) as? NetTrafficStatOC  {
                         self.downloadSpeed = netTrafficStat.ibytes_per_sec as! Double
                         self.uploadSpeed = netTrafficStat.obytes_per_sec as! Double
+                        
+                        // Accumulate totals (speed is bytes per second, timer is 1s)
+                        self.totalDownload += self.downloadSpeed
+                        self.totalUpload += self.uploadSpeed
+                        
+                        // Update History
+                        self.updateHistory(&self.downloadHistory, newValue: self.downloadSpeed)
+                        self.updateHistory(&self.uploadHistory, newValue: self.uploadSpeed)
+                        self.updateHistory(&self.totalTrafficHistory, newValue: self.downloadSpeed + self.uploadSpeed)
                         
                         let (downVal, downUnit) = self.formatSpeed(self.downloadSpeed)
                         let (upVal, upUnit) = self.formatSpeed(self.uploadSpeed)
