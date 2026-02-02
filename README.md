@@ -22,19 +22,28 @@ Net Bar provides real-time network monitoring directly in your menu bar. It allo
 ## Screenshots
 
 <p align="center">
-  <img src="Screenshots/sc.png" alt="Net Bar Screenshot" width="50%" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+  <img src="Screenshots/sc-1.png" alt="Net Bar Preview 1" width="32%" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+  <img src="Screenshots/sc-2.png" alt="Net Bar Preview 2" width="32%" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+  <img src="Screenshots/sc-3.png" alt="Net Bar Preview 3" width="32%" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 </p>
 
 ## Features
 
-- **Real-time Monitoring**: View current download and upload speeds in the menu bar.
-- **Detailed Statistics**: Access rich diagnostics including Wi-Fi details (SSID, Link Rate, Signal Strength, Noise) and Latency (Ping and Jitter).
-- **Customization**:
-  - **Typography**: Adjust font size, line spacing, and kerning.
-  - **Display Modes**: Choose to show download, upload, or both monitoring stats.
-  - **Units**: Switch between Bytes (MB/s) and Bits (Mbps).
-  - **Appearance**: Toggle direction arrows and other visual elements.
-- **Native Experience**: Built with SwiftUI and AppKit for seamless macOS integration.
+- **Real-time Monitoring**: View current download and upload speeds directly in the menu bar.
+- **Comprehensive System Stats**: Now monitors more than just network:
+  - **Memory Usage**: Track actual RAM usage and pressure.
+  - **Processor Usage**: Track CPU usage.
+  - **Storage**: Monitor disk space (Used vs Free).
+  - **Battery**: Real-time battery health and status adjustments.
+  - **Temperature**: Keep an eye on device thermal state.
+- **Detailed Network Diagnostics**: Access rich Wi-Fi details (SSID, Link Rate, Signal/RSSI, Noise) and Latency ping.
+- **Advanced Customization**:
+  - **Drag-and-Drop Reordering**: Rearrange every section in the dashboard to suit your workflow.
+  - **Dynamic Filtering**: Disable sections you don't need (like "Disk" or "Battery"), and they vanish from the interface and reorder list entirely.
+  - **Typography**: Fine-tune font size, line spacing, and kerning.
+- **Smart Tips**: The app now gives you helpful tips based on your specific hardware status (e.g., "High Memory Usage" or "Weak Signal"), but only for enabled sections.
+- **Native Experience**: Built with SwiftUI and AppKit for a seamless, lightweight, and crash-free macOS experience.
+
 
 ## Privacy and Security
 
