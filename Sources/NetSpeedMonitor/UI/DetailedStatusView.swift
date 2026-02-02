@@ -9,13 +9,13 @@ struct DetailedStatusView: View {
     @State private var uptimeString: String = "00:00:00"
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
+      @AppStorage("showTrafficHeader") private var showTrafficHeader = true
     @AppStorage("showTraffic") private var showTraffic = true
     @AppStorage("showConnection") private var showConnection = true
     @AppStorage("showRouter") private var showRouter = true
     @AppStorage("showDNS") private var showDNS = true
     @AppStorage("showInternet") private var showInternet = true
     @AppStorage("showTips") private var showTips = true
-    @AppStorage("showTrafficHeader") private var showTrafficHeader = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
