@@ -107,38 +107,26 @@ struct SettingsView: View {
                 }
                 
                 Section("Misc (System Stats)") {
-                    VStack(alignment: .leading) {
-                        Toggle("CPU Usage", isOn: Binding(
-                            get: { UserDefaults.standard.object(forKey: "showCPU") as? Bool ?? false },
-                            set: { UserDefaults.standard.set($0, forKey: "showCPU") }
-                        ))
-                        Toggle("Show in Menu Bar", isOn: $menuBarState.showCPUMenu)
-                            .font(.caption)
-                            .padding(.leading, 20)
-                            .disabled(!(UserDefaults.standard.object(forKey: "showCPU") as? Bool ?? false))
-                    }
+                    Toggle("CPU Usage", isOn: Binding(
+                         get: { UserDefaults.standard.object(forKey: "showCPU") as? Bool ?? false },
+                         set: { UserDefaults.standard.set($0, forKey: "showCPU") }
+                    ))
+                    Toggle("Show CPU Usage in Menu Bar", isOn: $menuBarState.showCPUMenu)
+                        .disabled(!(UserDefaults.standard.object(forKey: "showCPU") as? Bool ?? false))
                     
-                    VStack(alignment: .leading) {
-                        Toggle("Memory Usage", isOn: Binding(
-                            get: { UserDefaults.standard.object(forKey: "showMemory") as? Bool ?? false },
-                            set: { UserDefaults.standard.set($0, forKey: "showMemory") }
-                        ))
-                        Toggle("Show in Menu Bar", isOn: $menuBarState.showMemoryMenu)
-                            .font(.caption)
-                            .padding(.leading, 20)
-                             .disabled(!(UserDefaults.standard.object(forKey: "showMemory") as? Bool ?? false))
-                    }
+                    Toggle("Memory Usage", isOn: Binding(
+                        get: { UserDefaults.standard.object(forKey: "showMemory") as? Bool ?? false },
+                        set: { UserDefaults.standard.set($0, forKey: "showMemory") }
+                    ))
+                    Toggle("Show Memory Usage in Menu Bar", isOn: $menuBarState.showMemoryMenu)
+                        .disabled(!(UserDefaults.standard.object(forKey: "showMemory") as? Bool ?? false))
                     
-                    VStack(alignment: .leading) {
-                        Toggle("Disk Usage", isOn: Binding(
-                            get: { UserDefaults.standard.object(forKey: "showDisk") as? Bool ?? false },
-                            set: { UserDefaults.standard.set($0, forKey: "showDisk") }
-                        ))
-                        Toggle("Show in Menu Bar", isOn: $menuBarState.showDiskMenu)
-                            .font(.caption)
-                            .padding(.leading, 20)
-                             .disabled(!(UserDefaults.standard.object(forKey: "showDisk") as? Bool ?? false))
-                    }
+                    Toggle("Disk Usage", isOn: Binding(
+                        get: { UserDefaults.standard.object(forKey: "showDisk") as? Bool ?? false },
+                        set: { UserDefaults.standard.set($0, forKey: "showDisk") }
+                    ))
+                    Toggle("Show Disk Usage in Menu Bar", isOn: $menuBarState.showDiskMenu)
+                        .disabled(!(UserDefaults.standard.object(forKey: "showDisk") as? Bool ?? false))
                     
                     Toggle("Energy / Battery", isOn: Binding(
                         get: { UserDefaults.standard.object(forKey: "showEnergy") as? Bool ?? false },
@@ -166,50 +154,47 @@ struct SettingsView: View {
             }
             
             Section("Typography") {
-                Grid(alignment: .leading, verticalSpacing: 10) {
-                    GridRow {
-                        Text("Font Size")
-                            .gridColumnAlignment(.leading)
-                        Slider(value: Binding(
-                            get: { menuBarState.fontSize },
-                            set: { menuBarState.fontSize = round($0) }
-                        ), in: 9...16)
-                            .frame(maxWidth: 200)
-                        Text("\(Int(menuBarState.fontSize)) pt")
-                            .monospacedDigit()
-                            .foregroundStyle(.secondary)
-                            .gridColumnAlignment(.leading)
-                            .frame(width: 40, alignment: .trailing)
-                    }
-                    
-                    GridRow {
-                        Text("Line Spacing")
-                        Slider(value: Binding(
-                            get: { menuBarState.textSpacing },
-                            set: { menuBarState.textSpacing = round($0) }
-                        ), in: -5...10)
-                            .frame(maxWidth: 200)
-                        Text("\(Int(menuBarState.textSpacing)) pt")
-                            .monospacedDigit()
-                            .foregroundStyle(.secondary)
-                            .frame(width: 40, alignment: .trailing)
-                    }
-                    
-                    GridRow {
-                        Text("Kerning")
-                        Slider(value: Binding(
-                            get: { menuBarState.characterSpacing },
-                            set: { menuBarState.characterSpacing = (round($0 * 2) / 2) }
-                        ), in: -2...5)
-                            .frame(maxWidth: 200)
-                        Text(String(format: "%.1f pt", menuBarState.characterSpacing))
-                            .monospacedDigit()
-                            .foregroundStyle(.secondary)
-                            .frame(width: 40, alignment: .trailing)
-                    }
+                HStack {
+                    Text("Font Size")
+                    Spacer()
+                    Slider(value: Binding(
+                        get: { menuBarState.fontSize },
+                        set: { menuBarState.fontSize = round($0) }
+                    ), in: 9...16)
+                    .frame(width: 150)
+                    Text("\(Int(menuBarState.fontSize)) pt")
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                        .frame(width: 40, alignment: .trailing)
                 }
-                .padding(.vertical, 8)
-                .frame(maxWidth: .infinity, alignment: .center)
+                
+                HStack {
+                    Text("Line Spacing")
+                    Spacer()
+                    Slider(value: Binding(
+                        get: { menuBarState.textSpacing },
+                        set: { menuBarState.textSpacing = round($0) }
+                    ), in: -5...10)
+                    .frame(width: 150)
+                    Text("\(Int(menuBarState.textSpacing)) pt")
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                        .frame(width: 40, alignment: .trailing)
+                }
+                
+                HStack {
+                    Text("Kerning")
+                    Spacer()
+                    Slider(value: Binding(
+                        get: { menuBarState.characterSpacing },
+                        set: { menuBarState.characterSpacing = (round($0 * 2) / 2) }
+                    ), in: -2...5)
+                    .frame(width: 150)
+                    Text(String(format: "%.1f pt", menuBarState.characterSpacing))
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                        .frame(width: 40, alignment: .trailing)
+                }
             }
             
             Section("Support") {
