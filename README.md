@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon.png" alt="Net Bar Icon" width="128" height="128">
+  <img src="assets/netbar.png" alt="Net Bar Icon" width="1280" height="640">
 </p>
 
 <p align="center">
