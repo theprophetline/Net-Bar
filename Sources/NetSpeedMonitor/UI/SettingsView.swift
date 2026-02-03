@@ -46,7 +46,7 @@ struct SettingsView: View {
                         Text("Net Bar")
                             .font(.title3)
                             .fontWeight(.semibold)
-                        Text("Version 1.3")
+                        Text("Version 1.4")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
