@@ -130,22 +130,27 @@ struct SettingsView: View {
                     .foregroundStyle(.red)
                 }
                 
-                Section("Misc (System Stats)") {
-                    Toggle("CPU Usage", isOn: $showCPU)
-                    Toggle("Show CPU Usage in Menu Bar", isOn: $menuBarState.showCPUMenu)
-                        .disabled(!showCPU)
-                    
-                    Toggle("Memory Usage", isOn: $showMemory)
-                    Toggle("Show Memory Usage in Menu Bar", isOn: $menuBarState.showMemoryMenu)
-                        .disabled(!showMemory)
-                    
-                    Toggle("Disk Usage", isOn: $showDisk)
-                    Toggle("Show Disk Usage in Menu Bar", isOn: $menuBarState.showDiskMenu)
-                        .disabled(!showDisk)
-                    
-                    Toggle("Energy / Battery", isOn: $showEnergy)
-                    
-                    Toggle("Temperature", isOn: $showTemp)
+                Section("CPU") {
+                    Toggle("Show CPU Usage", isOn: $showCPU)
+                    Toggle("Show in Menu Bar", isOn: $menuBarState.showCPUMenu)
+                }
+                
+                Section("Memory") {
+                    Toggle("Show Memory Usage", isOn: $showMemory)
+                    Toggle("Show in Menu Bar", isOn: $menuBarState.showMemoryMenu)
+                }
+                
+                Section("Disk") {
+                    Toggle("Show Disk Usage", isOn: $showDisk)
+                    Toggle("Show in Menu Bar", isOn: $menuBarState.showDiskMenu)
+                }
+                
+                Section("Energy") {
+                    Toggle("Show Energy / Battery", isOn: $showEnergy)
+                }
+                
+                Section("Temperature") {
+                    Toggle("Show Temperature", isOn: $showTemp)
                 }
                 
                 Section("General") {
