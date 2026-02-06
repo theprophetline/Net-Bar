@@ -28,91 +28,30 @@ struct DetailedStatusView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-            // Header
-            HStack {
-                VStack(alignment: .leading) {
-                    Text("Net Bar")
-                        .font(.headline)
-                    Text("Network Diagnostics")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+            StatusContentView(
+                statsService: statsService,
+                systemStatsService: systemStatsService,
+                menuBarState: menuBarState,
+                showTrafficHeader: showTrafficHeader,
+                visibleSections: visibleSections,
+                tips: tips,
+                showTips: showTips,
+                isSnapshot: false,
+                onSettingsTap: {
+                    NSApp.activate(ignoringOtherApps: true)
+                    openWindow(id: "settings")
+                    // Close the popover by simulating a click outside or resigning focus? 
+                    // Actually, opening the window usually stays in front.
+                },
+                onQuitTap: {
+                    NSApp.terminate(nil)
                 }
-                Spacer()
-                Image(systemName: "gearshape")
-                    .foregroundStyle(.secondary)
-                    .onTapGesture {
-                        NSApp.activate(ignoringOtherApps: true)
-                        openWindow(id: "settings")
-                    }
-            }
-            Divider()
-            
-            // Usage Header (SSID)
-            HStack {
-                 Circle()
-                     .fill(Color.green)
-                     .frame(width: 8, height: 8)
-                 Text(statsService.stats.ssid.isEmpty ? "Wi-Fi" : statsService.stats.ssid)
-                     .font(.headline)
-                 
-                 if !statsService.stats.band.isEmpty {
-                     Text(statsService.stats.band)
-                         .font(.caption)
-                         .padding(.horizontal, 6)
-                         .padding(.vertical, 2)
-                         .background(Color.gray.opacity(0.3))
-                         .cornerRadius(4)
-                 }
-            } 
-            
-            // Traffic Section
-            ForEach(Array(visibleSections.enumerated()), id: \.element) { index, section in
-                if index > 0 { Divider() }
-                sectionView(for: section)
-            }
-            
-            Divider()
-            
-            // Tips Section
-            if showTips && !tips.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("Tips", systemImage: "lightbulb.fill")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.yellow)
-                    
-                    ForEach(tips, id: \.self) { tip in
-                        Text("• " + tip)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-                Divider()
-            }
-            
-            // Quit Button
-            Button(action: {
-                NSApp.terminate(nil)
-            }) {
-                HStack {
-                    Image(systemName: "power")
-                    Text("Quit App")
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(Color.red.opacity(0.1))
-                .foregroundStyle(.red)
-                .cornerRadius(6)
-            }
-            .buttonStyle(.plain)
+            )
+            .padding(16)
+            .background(GeometryReader { geometry in
+                Color.clear.preference(key: ViewHeightKey.self, value: geometry.size.height)
+            })
         }
-        .padding(16)
-        .background(GeometryReader { geometry in
-            Color.clear.preference(key: ViewHeightKey.self, value: geometry.size.height)
-        })
-        } // ScrollView
         .onPreferenceChange(ViewHeightKey.self) { contentHeight = $0 }
         .frame(width: 350)
         .frame(height: min(contentHeight, 600))
@@ -170,7 +109,185 @@ struct DetailedStatusView: View {
             }
         }
     }
+}
+
+// Extracted view for snapshotting
+struct StatusContentView: View {
+    @ObservedObject var statsService: NetworkStatsService
+    @ObservedObject var systemStatsService: SystemStatsService
+    @ObservedObject var menuBarState: MenuBarState
     
+    let showTrafficHeader: Bool
+    let visibleSections: [String]
+    let tips: [String]
+    let showTips: Bool
+    let isSnapshot: Bool
+    let onSettingsTap: () -> Void
+    let onQuitTap: () -> Void
+    
+    init(statsService: NetworkStatsService, systemStatsService: SystemStatsService, menuBarState: MenuBarState, showTrafficHeader: Bool, visibleSections: [String], tips: [String], showTips: Bool, isSnapshot: Bool = false, onSettingsTap: @escaping () -> Void, onQuitTap: @escaping () -> Void) {
+        self.statsService = statsService
+        self.systemStatsService = systemStatsService
+        self.menuBarState = menuBarState
+        self.showTrafficHeader = showTrafficHeader
+        self.visibleSections = visibleSections
+        self.tips = tips
+        self.showTips = showTips
+        self.isSnapshot = isSnapshot
+        self.onSettingsTap = onSettingsTap
+        self.onQuitTap = onQuitTap
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header
+            HStack {
+                VStack(alignment: .leading) {
+                    Text("Net Bar")
+                        .font(.headline)
+                    Text("Network Diagnostics")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                
+                if !isSnapshot {
+                    // Share Button AND Settings Button
+                    HStack(spacing: 12) {
+                        // Share Button
+                        Button(action: shareStats) {
+                             Image(systemName: "square.and.arrow.up")
+                                 .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Image(systemName: "gearshape")
+                            .foregroundStyle(.secondary)
+                            .onTapGesture {
+                                onSettingsTap()
+                            }
+                    }
+                }
+            }
+            Divider()
+            
+            // Usage Header (SSID)
+            HStack {
+                 Circle()
+                     .fill(Color.green)
+                     .frame(width: 8, height: 8)
+                 Text(statsService.stats.ssid.isEmpty ? "Wi-Fi" : statsService.stats.ssid)
+                     .font(.headline)
+                 
+                 if !statsService.stats.band.isEmpty {
+                     Text(statsService.stats.band)
+                         .font(.caption)
+                         .padding(.horizontal, 6)
+                         .padding(.vertical, 2)
+                         .background(Color.gray.opacity(0.3))
+                         .cornerRadius(4)
+                 }
+            }
+            
+            // Traffic Section
+            ForEach(Array(visibleSections.enumerated()), id: \.element) { index, section in
+                if index > 0 { Divider() }
+                sectionView(for: section)
+            }
+            
+            Divider()
+            
+            // Tips Section
+            if showTips && !tips.isEmpty && !isSnapshot {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("Tips", systemImage: "lightbulb.fill")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.yellow)
+                    
+                    ForEach(tips, id: \.self) { tip in
+                        Text("• " + tip)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                Divider()
+            }
+            
+            if !isSnapshot {
+                // Quit Button
+                Button(action: onQuitTap) {
+                    HStack {
+                        Image(systemName: "power")
+                        Text("Quit App")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(Color.red.opacity(0.1))
+                    .foregroundStyle(.red)
+                    .cornerRadius(6)
+                }
+                .buttonStyle(.plain)
+            }
+            
+            if isSnapshot {
+                HStack(spacing: 6) {
+                    Spacer()
+                    if let icon = NSImage(named: "AppIcon") {
+                        Image(nsImage: icon)
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                    }
+                    Text("Net Bar")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+                .padding(.top, 4)
+            }
+        }
+    }
+    
+    @MainActor
+    func shareStats() {
+        guard let image = renderSnapshot() else { return }
+        
+        let picker = NSSharingServicePicker(items: [image])
+        // Find the window to anchor the picker
+        if let window = NSApp.windows.first(where: { $0.isKeyWindow }) ?? NSApp.windows.first {
+             // Show centered in the window or near the top right
+             // Getting the exact button frame is hard without GeometryReader, 
+             // but showing it relative to the content view is a reasonable fallback.
+            picker.show(relativeTo: .zero, of: window.contentView!, preferredEdge: .minY)
+        }
+    }
+    
+    @MainActor
+    func renderSnapshot() -> NSImage? {
+        let renderer = ImageRenderer(content:
+            StatusContentView(
+                statsService: statsService,
+                systemStatsService: systemStatsService,
+                menuBarState: menuBarState,
+                showTrafficHeader: true,
+                visibleSections: ["Traffic", "Connection", "Router", "DNS", "Internet"],
+                tips: [],
+                showTips: false,
+                isSnapshot: true,
+                onSettingsTap: {}, // No-op
+                onQuitTap: {} // No-op
+            )
+            .padding(16)
+            .frame(width: 350)
+            .background(Color(NSColor.windowBackgroundColor))
+        )
+        renderer.scale = 2.0 // Retinal quality
+        
+        return renderer.nsImage
+    }
+
     @ViewBuilder
     func sectionView(for section: String) -> some View {
         switch section {
@@ -334,9 +451,9 @@ struct DetailedStatusView: View {
                      }
                      if systemStatsService.stats.timeRemaining > 0 {
                          GridRow(alignment: .center) {
-                              Text("Time").foregroundStyle(.secondary)
-                              Text("\(systemStatsService.stats.timeRemaining) min").foregroundStyle(.secondary).monospacedDigit()
-                              Spacer()
+                               Text("Time").foregroundStyle(.secondary)
+                               Text("\(systemStatsService.stats.timeRemaining) min").foregroundStyle(.secondary).monospacedDigit()
+                               Spacer()
                          }
                      }
                  }
@@ -348,7 +465,7 @@ struct DetailedStatusView: View {
                      GridRow(alignment: .center) {
                          Text("State").foregroundStyle(.secondary)
                          HStack(spacing: 4) {
-                              Image(systemName: "thermometer")
+                               Image(systemName: "thermometer")
                              Text(systemStatsService.stats.thermalPressure)
                                   .foregroundStyle(systemStatsService.stats.thermalPressure == "Normal" ? .green : .red)
                          }
