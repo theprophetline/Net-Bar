@@ -97,7 +97,7 @@ class MenuBarState: ObservableObject {
             }
         }
         
-        return (String(format: "%6.2lf", scaledValue), metrics[metricIndex] + (unitType == .bits ? "ps" : "/s"))
+        return (String(format: "%.2f", scaledValue), metrics[metricIndex] + (unitType == .bits ? "ps" : "/s"))
     }
     
     func formatBytes(_ bytes: Double) -> (String, String) {
