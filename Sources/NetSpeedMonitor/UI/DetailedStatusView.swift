@@ -114,6 +114,7 @@ struct StatusContentView: View {
     @ObservedObject var statsService: NetworkStatsService
     @ObservedObject var systemStatsService: SystemStatsService
     @ObservedObject var menuBarState: MenuBarState
+    @StateObject private var speedTestService = SpeedTestService.shared
     
     let visibleSections: [String]
     let tips: [String]
@@ -212,6 +213,89 @@ struct StatusContentView: View {
             }
             
             if !isSnapshot {
+                // Speed Test Button
+                VStack(spacing: 8) {
+                    if speedTestService.isTesting {
+                        HStack {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text("Testing Speed...")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(6)
+                    } else if let dl = speedTestService.downloadSpeed, let ul = speedTestService.uploadSpeed {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Speed Test Result")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(.secondary)
+                                HStack(spacing: 12) {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "arrow.down")
+                                            .font(.caption2)
+                                        Text(String(format: "%.1f Mbps", dl))
+                                            .font(.caption)
+                                            .fontWeight(.semibold)
+                                    }
+                                    .foregroundStyle(.green)
+                                    
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "arrow.up")
+                                            .font(.caption2)
+                                        Text(String(format: "%.1f Mbps", ul))
+                                            .font(.caption)
+                                            .fontWeight(.semibold)
+                                    }
+                                    .foregroundStyle(.blue)
+                                    
+                                    if let resp = speedTestService.responsiveness {
+                                        Text(resp)
+                                            .font(.caption2)
+                                            .padding(.horizontal, 4)
+                                            .padding(.vertical, 1)
+                                            .background(Color.orange.opacity(0.2))
+                                            .foregroundStyle(.orange)
+                                            .cornerRadius(4)
+                                    }
+                                }
+                            }
+                            Spacer()
+                            Button("Run Again") {
+                                speedTestService.startTest()
+                            }
+                            .font(.caption2)
+                            .buttonStyle(.bordered)
+                        }
+                        .padding(8)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(6)
+                    } else {
+                        Button(action: { speedTestService.startTest() }) {
+                            HStack {
+                                Image(systemName: "gauge.with.needle")
+                                Text("Speed Test")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(Color.blue.opacity(0.1))
+                            .foregroundStyle(.blue)
+                            .cornerRadius(6)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    
+                    if let error = speedTestService.error {
+                        Text(error)
+                            .font(.caption2)
+                            .foregroundStyle(.red)
+                    }
+                }
+
                 // Quit Button
                 Button(action: onQuitTap) {
                     HStack {
