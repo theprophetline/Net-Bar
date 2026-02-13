@@ -29,6 +29,7 @@ class MenuBarState: ObservableObject {
     @AppStorage("showCPUMenu") var showCPUMenu: Bool = false
     @AppStorage("showMemoryMenu") var showMemoryMenu: Bool = false
     @AppStorage("showDiskMenu") var showDiskMenu: Bool = false
+    @AppStorage("showTempMenu") var showTempMenu: Bool = false
     
     @Published var menuText = ""
     
@@ -165,6 +166,9 @@ class MenuBarState: ObservableObject {
                         }
                         if self.showDiskMenu {
                             statsList.append("HDD: \(Int(self.systemStatsService.stats.diskUsage))%")
+                        }
+                        if self.showTempMenu {
+                            statsList.append("\(Int(self.systemStatsService.stats.cpuTemperature))°C")
                         }
                         
                         let systemStatsText = statsList.joined(separator: " | ")

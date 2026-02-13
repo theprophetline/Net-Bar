@@ -154,6 +154,7 @@ struct SettingsView: View {
                 Toggle("Show CPU in Menu Bar", isOn: $menuBarState.showCPUMenu)
                 Toggle("Show Memory in Menu Bar", isOn: $menuBarState.showMemoryMenu)
                 Toggle("Show Disk in Menu Bar", isOn: $menuBarState.showDiskMenu)
+                Toggle("Show Temp in Menu Bar", isOn: $menuBarState.showTempMenu)
             }
             Section("Popover Content") {
                 Toggle("Traffic", isOn: $showTraffic)
